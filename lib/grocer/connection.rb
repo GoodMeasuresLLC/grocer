@@ -1,6 +1,7 @@
 require 'grocer'
 require 'grocer/no_gateway_error'
 require 'grocer/no_port_error'
+require 'grocer/certificate_expired_error'
 require 'grocer/ssl_connection'
 
 module Grocer
@@ -62,7 +63,12 @@ module Grocer
       begin
         connect
         yield
-      rescue StandardError, Errno::EPIPE
+      rescue => e
+        if e.class == OpenSSL::SSL::SSLError && e.message =~ /certificate expired/i
+          e.extend(CertificateExpiredError)
+          raise
+        end
+
         raise unless attempts < retries
 
         destroy_connection

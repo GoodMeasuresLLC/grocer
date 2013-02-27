@@ -1,8 +1,8 @@
 # Grocer
 
-[![Build Status](https://secure.travis-ci.org/highgroove/grocer.png)](http://travis-ci.org/highgroove/grocer)
-[![Dependency Status](https://gemnasium.com/highgroove/grocer.png)](https://gemnasium.com/highgroove/grocer)
-[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/highgroove/grocer)
+[![Build Status](https://api.travis-ci.org/grocer/grocer.png?branch=master)](https://travis-ci.org/grocer/grocer)
+[![Dependency Status](https://gemnasium.com/grocer/grocer.png)](https://gemnasium.com/grocer/grocer)
+[![Code Climate](https://codeclimate.com/github/grocer/grocer.png)](https://codeclimate.com/github/grocer/grocer)
 
 **grocer** interfaces with the [Apple Push Notification
 Service](http://developer.apple.com/library/mac/#documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ApplePushService/ApplePushService.html)
@@ -13,7 +13,7 @@ cleanest, most extensible, and friendliest.
 
 ## Requirements
 
-* Ruby/MRI 1.9.x or JRuby 1.7.x in 1.9 mode
+* Ruby/MRI 1.9.x, JRuby 1.7.x in 1.9 mode, Rubinius in 1.9 mode
 
 ## Installation
 
@@ -21,6 +21,12 @@ Add this line to your application's Gemfile:
 
 ```ruby
 gem 'grocer'
+```
+
+If you are using JRuby, you will also need to add this to enable full OpenSSL support:
+
+```ruby
+gem 'jruby-openssl'
 ```
 
 ## Usage
@@ -44,7 +50,7 @@ pusher = Grocer.pusher(
 
 #### Notes
 
-* `certificate`: If you don't have the certificate stored in a file, you 
+* `certificate`: If you don't have the certificate stored in a file, you
   can pass any object that responds to `read`.
   Example: `certificate: StringIO.new(pem_string)`
 * `gateway`: Defaults to different values depending on the `RAILS_ENV` or
@@ -103,6 +109,31 @@ notification = Grocer::Notification.new(
 # {"aps": {"alert": "Hello from Grocer"}, "acme2": ["bang", "whiz"]}
 ```
 
+#### Passbook Notifications
+
+A `Grocer::PassbookNotification` is a specialized kind of notification which
+does not require any payload. That is, you need not (and *[Apple explicitly says
+not to](http://developer.apple.com/library/ios/#Documentation/UserExperience/Conceptual/PassKit_PG/Chapters/Updating.html#//apple_ref/doc/uid/TP40012195-CH5-SW1)*)
+send any payload for a Passbook notification. If you do, it will be ignored.
+
+```ruby
+notification = Grocer::PassbookNotification.new(device_token: "...")
+# Generates a JSON payload like:
+# {"aps": {}}
+```
+
+#### Newsstand Notifications
+
+Grocer also supports the special Newsstand 'content-available' notification. `Grocer::NewsstandNotification` can be
+used for this. Like `Grocer::PassbookNotification`, it is a specialized kind of notification which does not require
+any payload. Likewise, anything you add to it will be ignored.
+
+```ruby
+notification = Grocer::NewsstandNotification.new(device_token: "...")
+# Generates a JSON payload like:
+# {"aps": {"content-available":1}}
+````
+
 ### Feedback
 
 ```ruby
@@ -117,7 +148,7 @@ feedback = Grocer.feedback(
 )
 
 feedback.each do |attempt|
-  puts "Device #{attempt.device_token} failed at #{attempt.timestamp}
+  puts "Device #{attempt.device_token} failed at #{attempt.timestamp}"
 end
 ```
 
@@ -163,7 +194,7 @@ describe "apple push notifications" do
 
     Timeout.timeout(3) {
       notification = @server.notifications.pop # blocking
-      notification.alert.should == "An awesome thing happened"
+      expect(notification.alert).to eq("An awesome thing happened")
     }
   end
 end
