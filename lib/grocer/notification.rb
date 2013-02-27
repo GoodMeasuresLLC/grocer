@@ -1,6 +1,4 @@
 require 'json'
-require 'grocer/no_payload_error'
-require 'grocer/payload_too_large_error'
 
 module Grocer
   # Public: An object used to send notifications to APNS.
