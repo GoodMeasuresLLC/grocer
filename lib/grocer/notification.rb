@@ -49,7 +49,7 @@ module Grocer
     private
 
     def validate_payload
-      fail NoPayloadError unless alert || badge   
+      fail NoPayloadError unless alert || badge
 
       fail PayloadTooLargeError if payload_too_large?
     end
