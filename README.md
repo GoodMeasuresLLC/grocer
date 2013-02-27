@@ -11,6 +11,8 @@ to send push notifications to iOS devices.
 There are other gems out there to do this, but **grocer** plans to be the
 cleanest, most extensible, and friendliest.
 
+This fork adds a blocking read-reply from https://github.com/aleph7/grocer.
+
 ## Requirements
 
 * Ruby/MRI 1.9.x, JRuby 1.7.x in 1.9 mode, Rubinius in 1.9 mode
