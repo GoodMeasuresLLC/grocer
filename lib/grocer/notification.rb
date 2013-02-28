@@ -1,10 +1,10 @@
 require 'json'
-require 'grocer/no_payload_error'
-require 'grocer/invalid_payload_error'
 
 module Grocer
   # Public: An object used to send notifications to APNS.
   class Notification
+    MAX_PAYLOAD_SIZE = 256
+
     attr_accessor :identifier, :expiry, :device_token, :alert, :badge, :sound,
                   :custom
 
@@ -42,10 +42,13 @@ module Grocer
 
     private
 
-    def validate_payload
-      fail NoPayloadError unless alert || badge   
+    def payload_too_large?
+      encoded_payload.bytesize > MAX_PAYLOAD_SIZE
+    end
 
-      fail InvalidPayloadError if encoded_payload.bytesize > 256
+    def validate_payload
+      fail NoPayloadError unless alert || badge
+      fail PayloadTooLargeError if payload_too_large?
     end
 
     def encoded_payload
