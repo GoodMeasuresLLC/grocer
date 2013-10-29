@@ -155,6 +155,8 @@ feedback.each do |attempt|
 end
 ```
 
+
+
 #### Notes
 
 * `gateway`: Defaults to `feedback.push.apple.com` **only** when running in a
